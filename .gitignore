@@ -1,0 +1,74 @@
+# =========================================================
+# FaceVerify - .gitignore
+# =========================================================
+
+# Python virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Personal / real face images
+data/enrolled/*
+data/test/*
+data/face_images/*
+
+# Personal candidate database
+data/candidates/candidates.json
+
+# ML model files
+models/*
+
+# Generated results
+results/*.csv
+results/*.png
+results/*.jpg
+results/*.jpeg
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Operating system
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Build files
+build/
+dist/
+*.egg-info/
