@@ -1,12 +1,29 @@
 # FaceVerify
 
-## Live Face Verification and Liveness Detection Web Application
+## Live Face Verification, Face Recognition and Liveness Detection Web Application
 
-FaceVerify is a biometric web application developed using Python, Streamlit, OpenCV, and InsightFace.
+FaceVerify is a biometric web application developed using Python, Streamlit, OpenCV, InsightFace, and ONNX Runtime.
 
-The system provides a complete face verification workflow that includes user registration, face sample collection, face embedding generation, live camera-based face detection, liveness detection, and face matching.
+The system is designed to enroll individuals using multiple face samples, generate facial embeddings, and perform live camera-based face verification and recognition.
 
-The main purpose of FaceVerify is to verify whether the person appearing in front of the live camera is the same person whose face was registered in the system.
+The application combines:
+
+- User registration
+- Secure password storage
+- Face enrollment
+- Face detection
+- Face embedding generation
+- Live camera processing
+- Liveness detection
+- Cosine similarity matching
+- Unknown-face rejection
+- Candidate management
+- Face recognition against stored embeddings
+- Evaluation support
+- Error handling
+- Privacy-aware biometric processing
+
+The main purpose of FaceVerify is to determine whether a face appearing in front of the live camera matches a previously registered face.
 
 ---
 
@@ -15,31 +32,37 @@ The main purpose of FaceVerify is to verify whether the person appearing in fron
 - [Project Overview](#project-overview)
 - [Objectives](#objectives)
 - [Key Features](#key-features)
-- [How FaceVerify Works](#how-faceverify-works)
-- [Registration Workflow](#registration-workflow)
-- [Login and Verification Workflow](#login-and-verification-workflow)
-- [Liveness Detection](#liveness-detection)
-- [Face Matching](#face-matching)
-- [Important Difference Between Liveness and Face Matching](#important-difference-between-liveness-and-face-matching)
-- [Verification Results](#verification-results)
 - [System Workflow](#system-workflow)
+- [Registration Workflow](#registration-workflow)
+- [Login and Live Face Verification](#login-and-live-face-verification)
+- [Liveness Detection](#liveness-detection)
+- [Face Detection](#face-detection)
+- [Face Embedding Generation](#face-embedding-generation)
+- [Face Matching](#face-matching)
+- [Unknown Face Rejection](#unknown-face-rejection)
+- [Verification Results](#verification-results)
+- [Face Recognition and Identification](#face-recognition-and-identification)
 - [Technologies Used](#technologies-used)
 - [Machine Learning Models](#machine-learning-models)
 - [Face Embeddings](#face-embeddings)
+- [Matching Threshold](#matching-threshold)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
-- [Environment Setup](#environment-setup)
+- [Python Environment](#python-environment)
 - [InsightFace Model Setup](#insightface-model-setup)
 - [Running the Application](#running-the-application)
 - [Application Pages](#application-pages)
 - [Testing](#testing)
-- [Expected Test Results](#expected-test-results)
-- [Privacy and Data Handling](#privacy-and-data-handling)
+- [Expected Results](#expected-results)
+- [Evaluation](#evaluation)
+- [Failure Cases and Error Handling](#failure-cases-and-error-handling)
 - [Security](#security)
+- [Privacy and Data Handling](#privacy-and-data-handling)
+- [Cost](#cost)
 - [Limitations](#limitations)
-- [Future Enhancements](#future-enhancements)
+- [Future Improvements](#future-improvements)
 - [Troubleshooting](#troubleshooting)
-- [Evaluation Guide](#evaluation-guide)
+- [Assignment Requirement Mapping](#assignment-requirement-mapping)
 - [Conclusion](#conclusion)
 - [Author](#author)
 
@@ -47,38 +70,51 @@ The main purpose of FaceVerify is to verify whether the person appearing in fron
 
 # Project Overview
 
-FaceVerify is designed to perform live biometric face verification.
+FaceVerify is a biometric face verification and recognition application.
 
-The system first creates a registered facial representation during account registration. During login, the application uses a live camera to detect a face, check liveness, generate a live face embedding, and compare it with the registered face embedding.
+The system allows a user to create an account and register their face using multiple face samples.
 
-The application does not consider a person verified simply because a live face is detected.
+The captured registration samples are processed using InsightFace to generate facial embeddings.
 
-The system separates:
+During verification, the application uses a live camera stream to temporarily process camera frames. Verification frames are processed in memory and are not saved as verification photographs.
 
-1. Account authentication
-2. Face detection
-3. Liveness detection
-4. Face embedding generation
-5. Face matching
+The live verification process consists of:
 
-This separation is important because a person can be a real live person but still be an unknown person.
+1. Detecting the face.
+2. Checking the number of faces.
+3. Performing liveness detection.
+4. Generating a face embedding.
+5. Comparing the live embedding with the registered embedding.
+6. Returning the appropriate verification result.
+
+The system separates liveness detection from identity verification.
+
+A person being detected as a live person does not automatically mean that the person is the registered user.
 
 For example:
 
 ```text
-Unknown Person
-      |
-      v
-Live Face Detected
-      |
-      v
-Liveness Detected
-      |
-      v
-Face Matching
-      |
-      v
-Does Not Match Registered Face
-      |
-      v
-UNKNOWN FACE
+Person appears in front of camera
+            |
+            v
+       Face Detection
+            |
+            v
+      Face Count Check
+            |
+            v
+      Liveness Detection
+            |
+            v
+   Live Face Embedding
+            |
+            v
+     Similarity Matching
+            |
+       +----+----+
+       |         |
+       v         v
+    Match     No Match
+       |         |
+       v         v
+FACE DETECTED  UNKNOWN FACE
